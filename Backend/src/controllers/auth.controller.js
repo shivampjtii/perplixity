@@ -53,7 +53,15 @@ export const registerController = async (req,res)=>{
 
 export const verifyEmailController = async (req, res)=>{
     const {token} = req.query;
-    const decoded = jwt.verify(token, config.JWT_SECRET);
+    try{
+        const decoded = jwt.verify(token, config.JWT_SECRET);
+    }catch(err){
+        return res.status(400).json({
+            message: "Invalid or expired token",
+            success: false,
+            err: err.message
+        })
+    }
 
     if(!decoded){
         return res.status(401).json({
@@ -91,7 +99,49 @@ export const verifyEmailController = async (req, res)=>{
 }
 
 export const loginController = async (req,res)=>{
+    const {email, password} = req.body;
 
+    const user = await userModel.findOne({email});
+    if(!user){
+        return res.status(400).json({
+            message: "Invalid email or password",
+            success: false,
+            err: "Invalid credentials"
+        })
+    }
+
+    const isPasswordValid = user.comparePassword(password);
+    if(!isPasswordValid){
+        return res.status(400).json({
+            message: "Invalid email or password",
+            success: false,
+            err: "Invalid credentials"
+        })
+    }
+
+    if(!user.verified){
+        return res.status(400).json({
+            message: "Please verify your email",
+            success: false,
+            err: "Email not verified"
+        })
+    }
+
+    const token = jwt.sign({
+        id: user._id,
+        username: user.username
+    }, config.JWT_SECRET, {expiresIn: '7d'})
+
+    res.cookie("token", token);
+    res.status(200).json({
+        message: "user logged in successfully",
+        success: true,
+        user:{
+            id: user._id,
+            username: user.username,
+            email: user.email
+        }
+    })
 };
 
 export const logoutController = (req,res)=>{
