@@ -144,6 +144,26 @@ export const loginController = async (req,res)=>{
     })
 };
 
+export const getMeController = async (req,res)=>{
+    const userId = req.user.id;
+
+    const user = await userModel.findById(userId).select("-password");
+
+    if(!user){
+        return res.status(400).json({
+            message: "User not found",
+            success: false,
+            err: "User not found"
+        })
+    }
+
+    res.status(200).json({
+        message: "User fetched successfully",
+        success: true,
+        user
+    })
+}
+
 export const logoutController = (req,res)=>{
 };
 
