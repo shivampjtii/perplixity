@@ -9,7 +9,8 @@ const config = {
     GOOGLE_REFRESH_TOKEN : process.env.GOOGLE_REFRESH_TOKEN,
     GOOGLE_USER : process.env.GOOGLE_USER,
     GEMINI_API_KEY : process.env.GEMINI_API_KEY,
-    PORT : process.env.PORT
+    PORT : process.env.PORT,
+    MISTRAL_API_KEY: process.env.MISTRAL_API_KEY
 }
 
 export default config;
