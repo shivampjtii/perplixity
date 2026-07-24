@@ -5,7 +5,7 @@ import { generateResponse, generateChatTitle } from "../services/ai.service.js";
 export async function sendMessage(req,res) {
     const {message, chat:chatId} = req.body;
 
-    let title=null
+    let title=null;
 
     if(!chatId){
         title = await generateChatTitle(message);
@@ -24,7 +24,7 @@ export async function sendMessage(req,res) {
         role: "user"
     })
     
-    const messages = await messageModel.find({chat: chatId});
+    const messages = await messageModel.find({chat: chatId || chat._id});
     
     const aiMessage = await messageModel.create({
         chat: chatId || chat._id,
